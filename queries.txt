@@ -1,0 +1,57 @@
+-- What are the top 5 most rented movies?
+WITH movie_rentals AS (
+    SELECT f.title AS movie_title,
+           COUNT(r.rental_id) AS total_rentals
+    FROM rental r
+    JOIN inventory i ON r.inventory_id = i.inventory_id
+    JOIN film f ON i.film_id = f.film_id
+    GROUP BY f.title
+)
+SELECT *
+FROM movie_rentals
+ORDER BY total_rentals DESC
+LIMIT 5;
+
+-- Which store makes more money, and during which month?
+
+SELECT month,
+       store_id,
+       total_revenue,
+       LAG(total_revenue) OVER (PARTITION BY store_id ORDER BY month) AS previous_month_revenue,
+       total_revenue - LAG(total_revenue) OVER (PARTITION BY store_id ORDER BY month) AS revenue_change
+FROM (
+    SELECT DATE_TRUNC('month', p.payment_date) AS month,
+           s.store_id,
+           SUM(p.amount) AS total_revenue
+    FROM payment p
+    JOIN staff st ON p.staff_id = st.staff_id
+    JOIN store s ON st.store_id = s.store_id
+    GROUP BY month, s.store_id
+) AS monthly_revenue;
+
+-- How many rentals does each staff member handle on average per week?
+WITH weekly_rentals AS (
+    SELECT s.staff_id,
+           CONCAT(s.first_name, ' ', s.last_name) AS staff_name,
+           DATE_TRUNC('week', r.rental_date) AS week,
+           COUNT(*) AS rentals_per_week
+    FROM rental r
+    JOIN staff s ON r.staff_id = s.staff_id
+    GROUP BY s.staff_id, staff_name, week
+)
+SELECT staff_id, staff_name,
+       ROUND(AVG(rentals_per_week), 2) AS avg_weekly_rentals
+FROM weekly_rentals
+GROUP BY staff_id, staff_name;
+
+-- Which film category earns the most money?
+SELECT c.name AS category,
+       SUM(p.amount) AS total_revenue
+FROM payment p
+JOIN rental r ON p.rental_id = r.rental_id
+JOIN inventory i ON r.inventory_id = i.inventory_id
+JOIN film f ON i.film_id = f.film_id
+JOIN film_category fc ON f.film_id = fc.film_id
+JOIN category c ON fc.category_id = c.category_id
+GROUP BY c.name
+ORDER BY total_revenue DESC;
