@@ -18,7 +18,7 @@ Top rented titles include Bucket Brotherhood, Rocketeer Mother, and Grit Clockwo
 ![Screenshot 2025-07-05 155836](https://github.com/user-attachments/assets/26e9f0a5-43d7-4185-bf91-b19d5677c58b)
 ![Chart2](https://github.com/user-attachments/assets/22263b0d-2358-46b3-b9cb-c2a8e6c4cc2b)
 
- Question 2
+# Question 2
 Which store makes more money, and how does their revenue change from month to month?
 
 I grouped payments by store and month, and used a LAG() window function to compare each month’s revenue to the previous one. This helped reveal trends and sudden drops.
@@ -41,7 +41,7 @@ Both employees handle a similar workload, with Mike slightly ahead in average we
 
 ![Screenshot 2025-07-05 154912](https://github.com/user-attachments/assets/9c1f75e7-95f8-4366-ae05-5ff7a9bbcc32)
 
-Question 4
+# Question 4
 Which film categories generate the most revenue?
 
 I joined payment data with film categories and summed the revenue per category. Then I used a RANK() window function to assign a revenue-based ranking.
